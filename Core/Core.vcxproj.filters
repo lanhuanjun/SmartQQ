@@ -1,36 +1,87 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="源文件">
-      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
-      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    <Filter Include="src">
+      <UniqueIdentifier>{7d2d5b6a-bb92-4d4a-9c25-beedeb94071c}</UniqueIdentifier>
     </Filter>
-    <Filter Include="头文件">
-      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
-      <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    <Filter Include="src\set">
+      <UniqueIdentifier>{c55fa9f5-660b-4df6-9546-1cda074542a7}</UniqueIdentifier>
     </Filter>
-    <Filter Include="资源文件">
-      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
-      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    <Filter Include="src\net">
+      <UniqueIdentifier>{c44ee9c9-f5c6-4ccb-9b85-e8c00598e898}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\request">
+      <UniqueIdentifier>{3c080fa2-d909-4013-97b0-f814f9f5aadc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\other">
+      <UniqueIdentifier>{b56284af-1c6c-475c-a93d-5a21775cd474}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="stdafx.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
-    <ClInclude Include="targetver.h">
-      <Filter>头文件</Filter>
-    </ClInclude>
+    <ClCompile Include="src\net\http_client.cc">
+      <Filter>src\net</Filter>
+    </ClCompile>
+    <ClCompile Include="src\test.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="src\other\platform.cpp">
+      <Filter>src\other</Filter>
+    </ClCompile>
+    <ClCompile Include="src\other\easylogging++.cc">
+      <Filter>src\other</Filter>
+    </ClCompile>
+    <ClCompile Include="src\request\qq_contact.cc">
+      <Filter>src\request</Filter>
+    </ClCompile>
+    <ClCompile Include="src\request\qq_login.cc">
+      <Filter>src\request</Filter>
+    </ClCompile>
+    <ClCompile Include="src\request\qq_poll.cpp">
+      <Filter>src\request</Filter>
+    </ClCompile>
+    <ClCompile Include="src\request\qq_temp.cc">
+      <Filter>src\request</Filter>
+    </ClCompile>
+    <ClCompile Include="src\set\qq_message.cc">
+      <Filter>src\set</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="stdafx.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
-    <ClCompile Include="Core.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
+    <ClInclude Include="src\net\http_client.h">
+      <Filter>src\net</Filter>
+    </ClInclude>
+    <ClInclude Include="src\other\log.h">
+      <Filter>src\other</Filter>
+    </ClInclude>
+    <ClInclude Include="src\other\platform.h">
+      <Filter>src\other</Filter>
+    </ClInclude>
+    <ClInclude Include="src\core_main.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="src\other\easylogging++.h">
+      <Filter>src\other</Filter>
+    </ClInclude>
+    <ClInclude Include="src\request\qq_contact.h">
+      <Filter>src\request</Filter>
+    </ClInclude>
+    <ClInclude Include="src\request\qq_login.h">
+      <Filter>src\request</Filter>
+    </ClInclude>
+    <ClInclude Include="src\request\qq_poll.h">
+      <Filter>src\request</Filter>
+    </ClInclude>
+    <ClInclude Include="src\request\qq_temp.h">
+      <Filter>src\request</Filter>
+    </ClInclude>
+    <ClInclude Include="src\set\qq_info.h">
+      <Filter>src\set</Filter>
+    </ClInclude>
+    <ClInclude Include="src\set\qq_message.h">
+      <Filter>src\set</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
