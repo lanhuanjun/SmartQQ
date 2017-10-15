@@ -6,7 +6,7 @@
 
 namespace qq
 {
-	class Poll
+	class QQPoll
 	{
 	public:
 		void StartPoll(QQSession &session, bool receiveMessageListener(bool hasMessage, ReceiveMessage &receiveMessage));

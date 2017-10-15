@@ -6,7 +6,6 @@
 #define QQCORE_QQ_LOGIN_H
 
 #include "../net/http_client.h"
-#include "../../../third/include/json/json.h"
 
 #include <iostream>
 
@@ -62,7 +61,7 @@ namespace qq{
          * 包括p_skey,uin,psessionid,cip
          * @return
          */
-		QQSession GetSession();
+		const QQSession GetSession();
     private:
         /**
          * 解析检查二维码响应获取到的数据

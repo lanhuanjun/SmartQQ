@@ -3,6 +3,7 @@
 //
 
 #include "qq_contact.h"
+#include "../other/base.h"
 
 qq::QQContact::QQContact(HttpClient *CLIENT)
 : CLIENT(CLIENT)
@@ -30,7 +31,7 @@ bool qq::QQContact::GetUserFriends(QQSession &session,FriendBaseInfo &friendBase
 	if (200 != response->m_code)
 	{
 		LOG(ERROR) << "QQTemp::GetUserFriends request error.code:" << response->m_code;
-		return;
+		return false;
 	}
 	LOG(DEBUG) << "QQTemp::GetUserFriends. json:" << response->m_data;
 
@@ -39,11 +40,10 @@ bool qq::QQContact::GetUserFriends(QQSession &session,FriendBaseInfo &friendBase
 
     return isOK;
 }
-bool qq::QQContact::PaserUserFriendsJson(const std::string &json, std::unordered_map<int, qq::FriendGroup> &friendGroups, std::unordered_map<uint64, qq::FriendInfo> &friendList) {
-    Json::Reader reader;
+bool qq::QQContact::PaserUserFriendsJson(const std::string &json, FriendGroupMap &friendGroups, FriendInfoMap &friendList) {
     Json::Value root;
 
-    if(!reader.parse(json.c_str(),root)){
+    if(!StringToJsonValue(root,json)){
         //Json数据有误
         return false;
     }
@@ -107,7 +107,7 @@ bool qq::QQContact::PaserUserFriendsJson(const std::string &json, std::unordered
 }
 const std::string qq::QQContact::GetHash(const long &uin, const std::string &ptwebqq) {
     int a[4] = {0};
-    for (int i = 0; i < ptwebqq.length(); ++i) {
+    for (size_t i = 0; i < ptwebqq.length(); ++i) {
         a[i % 4] ^= ptwebqq[i];
     }
     char w[4] = {'E', 'C', 'O', 'K'};
@@ -129,7 +129,7 @@ const std::string qq::QQContact::GetHash(const long &uin, const std::string &ptw
     return std::string(dl, 0, 16);
 }
 
-bool qq::QQContact::GetGroupNameList(QQSession &session,std::unordered_map<uint64 ,GroupInfo> &groupInfos) {
+bool qq::QQContact::GetGroupNameList(QQSession &session,GroupMap &groupInfos) {
     CLIENT->SetUrl("http://s.web2.qq.com/api/get_group_name_list_mask2");
     CLIENT->SetTempHeader(Header("Host","s.web2.qq.com"));
     CLIENT->SetTempHeader(Header("Origin","http://s.web2.qq.com"));
@@ -149,7 +149,7 @@ bool qq::QQContact::GetGroupNameList(QQSession &session,std::unordered_map<uint6
 	if (200 != response->m_code)
 	{
 		LOG(ERROR) << "QQTemp::GetGroupNameList request error.code:" << response->m_code;
-		return;
+		return false;
 	}
 	LOG(DEBUG) << "QQTemp::GetGroupNameList. json:" << response->m_data;
 
@@ -160,14 +160,13 @@ bool qq::QQContact::GetGroupNameList(QQSession &session,std::unordered_map<uint6
     return isOK;
 }
 
-bool qq::QQContact::PaserGroupNameListJson(const std::string &json,std::unordered_map<uint64 ,GroupInfo> &groupInfos) {
-    Json::Reader reader;
-    Json::Value root;
+bool qq::QQContact::PaserGroupNameListJson(const std::string &json,GroupMap &groupInfos) {
+	Json::Value root;
 
-    if(!reader.parse(json.c_str(),root)){
-        //Json数据有误
-        return false;
-    }
+	if (!StringToJsonValue(root, json)) {
+		//Json数据有误
+		return false;
+	}
 
     int retcode = root["retcode"].asInt();
     if(0 !=retcode){
@@ -188,7 +187,7 @@ bool qq::QQContact::PaserGroupNameListJson(const std::string &json,std::unordere
     return true;
 }
 
-bool qq::QQContact::GetDicusList(QQSession &session,std::unordered_map<uint64 ,DiscusDetailInfo> &discusList) {
+bool qq::QQContact::GetDicusList(QQSession &session,DiscusMap &discusList) {
 
     std::string url = "http://s.web2.qq.com/api/get_discus_list?CLIENTid=53999199&psessionid="
                  +session["psessionid"]
@@ -207,7 +206,7 @@ bool qq::QQContact::GetDicusList(QQSession &session,std::unordered_map<uint64 ,D
 	if (200 != response->m_code)
 	{
 		LOG(ERROR) << "QQTemp::GetDiscusDetailInfo request error.code:" << response->m_code;
-		return;
+		return false;
 	}
 	LOG(DEBUG) << "QQTemp::GetDiscusDetailInfo. json:" << response->m_data;
 
@@ -218,13 +217,13 @@ bool qq::QQContact::GetDicusList(QQSession &session,std::unordered_map<uint64 ,D
     return isOK;
 }
 
-bool qq::QQContact::PaserDiscusListJson(const std::string &json,std::unordered_map<uint64 ,DiscusDetailInfo> &discusInfos) {
-    Json::Reader reader;
-    Json::Value root;
-    if(!reader.parse(json.c_str(),root)){
-        //Json数据有误
-        return false;
-    }
+bool qq::QQContact::PaserDiscusListJson(const std::string &json,DiscusMap &discusInfos) {
+	Json::Value root;
+
+	if (!StringToJsonValue(root, json)) {
+		//Json数据有误
+		return false;
+	}
     int retcode = root["retcode"].asInt();
     if(0 !=retcode){
         //请求不成功
@@ -243,7 +242,7 @@ bool qq::QQContact::PaserDiscusListJson(const std::string &json,std::unordered_m
     return true;
 }
 
-bool qq::QQContact::GetRecentList(QQSession &session,std::unordered_map<uint64 ,RecentItem> &recentList) {
+bool qq::QQContact::GetRecentList(QQSession &session,RecentMap &recentList) {
     CLIENT->SetUrl("http://d1.web2.qq.com/channel/get_recent_list2");
     CLIENT->SetTempHeader(Header("Host","d1.web2.qq.com"));
     CLIENT->SetTempHeader(Header("Origin","http://d1.web2.qq.com"));
@@ -262,7 +261,7 @@ bool qq::QQContact::GetRecentList(QQSession &session,std::unordered_map<uint64 ,
 	if (200 != response->m_code)
 	{
 		LOG(ERROR) << "QQTemp::GetRecentList request error.code:" << response->m_code;
-		return;
+		return false;
 	}
 	LOG(DEBUG) << "QQTemp::GetRecentList. json:" << response->m_data;
 	std::string json = response->m_data;
@@ -271,15 +270,13 @@ bool qq::QQContact::GetRecentList(QQSession &session,std::unordered_map<uint64 ,
     return isOK;
 }
 
-bool qq::QQContact::PaserRecentListJson(const std::string &json,std::unordered_map<uint64 ,RecentItem> &recentList) {
-    Json::Reader reader;
-    Json::Value root;
+bool qq::QQContact::PaserRecentListJson(const std::string &json,RecentMap &recentList) {
+	Json::Value root;
 
-    if(!reader.parse(json.c_str(),root)){
-        //Json数据有误
-        return false;
-    }
-
+	if (!StringToJsonValue(root, json)) {
+		//Json数据有误
+		return false;
+	}
     int retcode = root["retcode"].asInt();
     if(0 !=retcode){
         //请求不成功

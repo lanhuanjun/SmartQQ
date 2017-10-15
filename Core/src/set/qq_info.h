@@ -7,8 +7,9 @@
 
 #include <string>
 #include <map>
+#include <unordered_map>
 #include "../other/platform.h"
-
+#include <memory>
 namespace qq {
 
     /**
@@ -31,6 +32,7 @@ namespace qq {
         bool is_vip = false;//是否为qq会员
         int vip_level = 0;//vip等级
     };
+
     struct FriendBaseInfo{
         std::unordered_map<int,FriendGroup> friendGroups;
         std::unordered_map<uint64,FriendInfo> friendInfos;

@@ -4,7 +4,6 @@
 
 #include <sstream>
 #include "qq_temp.h"
-#include "../../../third/include/json/json.h"
 
 qq::QQTemp::QQTemp(HttpClient * CLIENT)
 	:CLIENT(CLIENT) 
@@ -40,13 +39,11 @@ bool qq::QQTemp::GetOnLineBuddies(QQSession &session, std::list <FriendOnLine> &
 }
 
 bool qq::QQTemp::ParseOnLineBuddies(std::string &json, std::list <qq::FriendOnLine> &onlines) {
-    Json::Reader reader;
     Json::Value root;
-
-    if (!reader.parse(json.c_str(), root)) {
-        //Json数据有误
-        return false;
-    }
+	if (!StringToJsonValue(root, json))
+	{
+		return false;
+	}
 
     int retcode = root["retcode"].asInt();
     if (0 != retcode) {
@@ -88,12 +85,11 @@ bool qq::QQTemp::GetFriendQQNum(QQSession &session, uint64 uin, uint64 &qq_num) 
 	}
 	LOG(DEBUG) << "QQTemp::GetFriendQQNum. json:" << response->m_data;
 
-    Json::Reader reader;
-    Json::Value root;
-    if (!reader.parse(response->m_data, root)) {
-        //Json数据有误
-        return false;
-    }
+	Json::Value root;
+	if (!StringToJsonValue(root, response->m_data))
+	{
+		return false;
+	}
     int retcode = root["retcode"].asInt();
     if (0 != retcode) {
         //请求不成功
@@ -125,13 +121,11 @@ bool qq::QQTemp::GetSingleLongNick(QQSession &session, uint64 uin, std::string &
 	}
 	LOG(DEBUG) << "QQTemp::GetSingleLongNick. json:" << response->m_data;
 
-    Json::Reader reader;
-    Json::Value root;
-
-    if (!reader.parse(response->m_data, root)) {
-        //Json数据有误
-        return false;
-    }
+	Json::Value root;
+	if (!StringToJsonValue(root, response->m_data))
+	{
+		return false;
+	}
     int retcode = root["retcode"].asInt();
     if (0 != retcode) {
         //请求不成功
@@ -165,13 +159,11 @@ bool qq::QQTemp::GetSelfInfo(QQSession &session, QQInfo &qi) {
 }
 
 bool qq::QQTemp::ParseQQInfo(const std::string &json, QQInfo &qi) {
-    Json::Reader reader;
-    Json::Value root;
-
-    if (!reader.parse(json.c_str(), root)) {
-        //Json数据有误
-        return false;
-    }
+	Json::Value root;
+	if (!StringToJsonValue(root, json))
+	{
+		return false;
+	}
 
     int retcode = root["retcode"].asInt();
     if (0 != retcode) {
@@ -258,13 +250,11 @@ bool qq::QQTemp::GetGroupDetailInfo(QQSession &session, uint64 gcode, GroupDetai
 }
 
 bool qq::QQTemp::ParseGroupDetailInfo(std::string &json, GroupDetailInfo &groupDetailInfo) {
-    Json::Reader reader;
-    Json::Value root;
-
-    if (!reader.parse(json.c_str(), root)) {
-        //Json数据有误
-        return false;
-    }
+	Json::Value root;
+	if (!StringToJsonValue(root, json))
+	{
+		return false;
+	}
 
     int retcode = root["retcode"].asInt();
     if (0 != retcode) {
@@ -354,13 +344,11 @@ bool qq::QQTemp::GetDiscusDetailInfo(QQSession &session, uint64 did, DiscusDetai
 }
 
 bool qq::QQTemp::ParseDiscusDetailInfo(std::string &json, DiscusDetailInfo &ddi) {
-    Json::Reader reader;
-    Json::Value root;
-
-    if (!reader.parse(json.c_str(), root)) {
-        //Json数据有误
-        return false;
-    }
+	Json::Value root;
+	if (!StringToJsonValue(root, json))
+	{
+		return false;
+	}
 
     int retcode = root["retcode"].asInt();
     if (0 != retcode) {
@@ -460,12 +448,11 @@ bool qq::QQTemp::ChangeStatus(QQSession &session, QQStatus status) {
 	}
 	LOG(DEBUG) << "QQTemp::GetDiscusDetailInfo. json:" << response->m_data;
 
-	Json::Reader reader;
 	Json::Value root;
-    if (!reader.parse(response->m_data, root)) {
-        //Json数据有误
-        return false;
-    }
+	if (!StringToJsonValue(root, response->m_data))
+	{
+		return false;
+	}
     int retcode = root["retcode"].asInt();
 
     return 0 == retcode;
@@ -499,18 +486,17 @@ bool qq::QQTemp::SendOneMessage(QQSession &session, SendMessage sendMessage) {
 	auto response = CLIENT->GetResponse();
 	if (200 != response->m_code)
 	{
-		LOG(ERROR) << "QQTemp::ChangeStatus request error.code:" << response->m_code << " url:" << url;
+		LOG(ERROR) << "QQTemp::ChangeStatus request error.code:" << response->m_code << " type:" << sendMessage.GetMessageType();
 		return false;
 	}
 
 	LOG(DEBUG) << "QQTemp::GetDiscusDetailInfo. json:" << response->m_data;
 
-    Json::Reader reader;
     Json::Value root;
-
-    if (!reader.parse(response->m_data, root)) {
-        return false;
-    }
+	if (!StringToJsonValue(root, response->m_data))
+	{
+		return false;
+	}
     int errCode = root["errCode"].asInt();
 
     return 0 == errCode;

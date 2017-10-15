@@ -7,52 +7,45 @@
 
 #include <thread>
 
-#include "qq_login.h"
-#include "qq_contact.h"
-#include "http_client.h"
-#include "qq_temp.h"
-#include "qq_set/log_ini.h"
+#include "request/qq_login.h"
+#include "request/qq_contact.h"
+#include "request/qq_temp.h"
+#include "request/qq_poll.h"
+#include "net/http_client.h"
 
 namespace qq{
     class QQControl{
     public:
-        QQControl(Log &log);
+        QQControl();
         ~QQControl();
 
     private:
-        HttpClient *client_;
-        QQLogin * qqLogin_;
-        QQContact *qqContact_;
-        QQTemp *qqTemp_;
-        map<string,Header> need_;
-        Log *log_ = NULL;
+        HttpClient *CLIENT;
+        QQLogin * m_login;
+        QQContact *m_contact;
+        QQTemp *m_temp;
+		QQPoll *m_poll;
+		QQSession m_session;
+		
     public:
         /**
          * 获取登陆的二维码图片
          * @param size
          * @return
          */
-        const char* GetQRCImg(int &size);
-        /**
-         * 将数据保存到文件中
-         * @param filePath
-         * @param data
-         * @param size
-         * @return
-         */
-        bool SaveImgToFile(string filePath,const char * data,int size);
+        bool GetQRCImg(std::string & data);
         /**
          * 登陆QQ
          * @param Listener消息回调函数
          * @return
          */
-        bool LoginQQ(void Listener(QQLogin::QRC_Code status,string msg));
+        bool LoginQQ(void Listener(QRC_Code,std::string));
         /**
          * 获取登陆需要的信息
          * @param url
          * @return
          */
-        bool GetControlNeed(string url);
+        bool GetControlNeed(std::string url);
         /////////////////////////////////////////
         /**
          * 获取好友列表，分组信息
@@ -63,18 +56,18 @@ namespace qq{
          * 获取群列表
          * @return
          */
-        bool GetGroupNameList(std::map<u_int64_t ,GI> &groupList);
+        bool GetGroupNameList(GroupMap &groups);
         /**
          * 获取讨论组列表
          * @return
          */
-        bool GetDicusList(std::map<u_int64_t ,DI> &discusList);
+        bool GetDicusList(DiscusMap &discuss);
 
         /**
          * 获取历史聊天记录列表
          * @return
          */
-        bool GetRecentList(std::map<u_int64_t ,RI> &recentList);
+        bool GetRecentList(RecentMap &recents);
 
         //////////////////////////////
 
@@ -83,51 +76,51 @@ namespace qq{
          * @param onlines
          * @return
          */
-        bool GetOnLineBuddies(list<FriendOnLine> &onlines);
+        bool GetOnLineBuddies(std::list<FriendOnLine> &onlines);
         /**
          * 获取QQ号码
          * @param id 传入uin
          * @return 失败返回-1
          */
-        u_int64_t GetFriendQQNum(u_int64_t uin);
+        uint64 GetFriendQQNum(uint64 uin);
         /**
          * 获取好友签名
          * @param uin
          * @return
          */
-        string GetSingleLongNick(u_int64_t uin);
+        std::string GetSingleLongNick(uint64 uin);
         /**
          * 获取自己的信息
          * @return
          */
-        bool GetSelfInfo(QI &qi);
+        bool GetSelfInfo(QQInfo &self_info);
         /**
          * 获取qq号码信息
          * @param qi
          * @return
          */
-        bool GetQQInfo(u_int64_t uin,QI &qi);
+        bool GetQQInfo(uint64 uin,QQInfo &info);
         /**
          * 获取一个群的详细信息
          * @param gcode 非uin
          * @param groupDetailInfo
          * @return
          */
-        bool GetGroupDetailInfo(u_int64_t gcode, GroupDetailInfo &groupDetailInfo);
+        bool GetGroupDetailInfo(uint64 gcode, GroupDetailInfo &groupDetailInfo);
         /**
          * 获取讨论组的详细信息
          * @param did
          * @param dm
          * @return
          */
-        bool GetDiscusDetailInfo(u_int64_t did,DDI & ddi);
+        bool GetDiscusDetailInfo(uint64 did,DiscusDetailInfo & ddi);
         /**
          * 获取用户的头像
          * @param uin 传入uin
          * @param size 返回数据大小
          * @return 返回数据指针，为空则不成功
          */
-        const char *GetUserFace(u_int64_t uin,int &size);
+        bool GetUserFace(uint64 uin,std::string & data);
         /**
          * 更换qq状态
          * @param status
@@ -138,7 +131,7 @@ namespace qq{
          * 轮询消息
          * @return
          */
-        bool Poll(bool receiveMessageListener(bool hasMessage,ReceiveMessage &receiveMessage));
+        bool StartPoll(bool receiveMessageListener(bool hasMessage,ReceiveMessage &receiveMessage));
         /**
          * 发送消息
          * @param sendMessage

@@ -1,11 +1,11 @@
 //
 // Created by lan on 16-9-2.
 //
-
+#include "qq_login.h"
+#include "../other/base.h"
 
 #include <chrono>
 #include <thread>
-#include "qq_login.h"
 
 qq::QQLogin::QQLogin(qq::HttpClient *client)
 	:CLIENT(client)
@@ -48,23 +48,44 @@ bool qq::QQLogin::GetQRC(std::string &store) {
 	LOG(INFO) << "QQLogin::GetQRC succ.";
 	auto res = CLIENT->GetResponse();
 	store.assign(res->m_data);
+	for (auto iter = res->m_cookies.begin();iter != res->m_cookies.end();++iter)
+	{
+		m_session.insert(*iter);
+	}
 	return true;
 }
 
 bool qq::QQLogin::CheckQRC(void listener(QRC_Code, std::string)) {
-	std::string url = "https://ssl.ptlogin2.qq.com/ptqrlogin?webqq_type=10&remember_uin=1&login2qq=1&aid=501004106&u1=http%3A%2F%2Fw.qq.com%2Fproxy.html%3Flogin2qq%3D1%26webqq_type%3D10&ptredirect=0&ptlang=2052&daid=164&from_ui=1&pttype=1&dumy=&fp=loginerroralert&action=0-0-6097&mibao_css=m_webqq&t=1&g=1&js_type=0&js_ver=10173&login_sig=&pt_randsalt=2";
-    while (true){
-        CLIENT->SetUrl(url);
+	std::stringstream ssm;
+	ssm << "https://ssl.ptlogin2.qq.com/ptqrlogin?u1=http%3A%2F%2Fw.qq.com%2Fproxy.html&ptqrtoken=602151895&ptredirect=0&h=1&t=1&g=1&from_ui=1&ptlang=2052&action=0-0-1508051917786&js_ver=10230&js_type=1&login_sig="
+		<< m_session["pt_login_sig"]
+		<< "P&pt_uistyle=40&aid=501004106&daid=164&mibao_css=m_webqq&";
+	while (true){
+        CLIENT->SetUrl(ssm.str());
         CLIENT->SetTempHeader(Header("Host","ssl.ptlogin2.qq.com"));
-        CLIENT->SetTempHeader(Header("Referer","https://ui.ptlogin2.qq.com/cgi-bin/login?daid=164&target=self&style=16&mibao_css=m_webqq&appid=501004106"
-                "&enable_qlogin=0&no_verifyimg=1&s_url=http%3A%2F%2Fw.qq.com%2Fproxy.html&f_url=loginerroralert&strong_login"
-                "=1&login_state=10&t=20131024001"));
+        CLIENT->SetTempHeader(Header("Referer","https://xui.ptlogin2.qq.com/cgi-bin/xlogin?daid=164&target=self&style=40&pt_disable_pwd=1&mibao_css=m_webqq&appid=501004106&enable_qlogin=0&no_verifyimg=1&s_url=http%3A%2F%2Fw.qq.com%2Fproxy.html&f_url=loginerroralert&strong_login=1&login_state=10&t=20131024001"));
+		auto log_sig = m_session.find("pt_login_sig");
+		if (log_sig != m_session.end())
+		{
+			CLIENT->SetSendCookies(*log_sig);
+		}
+		auto qrsig = m_session.find("qrsig");
+		if (qrsig != m_session.end())
+		{
+			CLIENT->SetSendCookies(*qrsig);
+		}
         if(!CLIENT->Execute(HttpClient::GET)){
-            LOG(ERROR)<< "QQLogin::CheckQRC error. url"<< url;
+            LOG(ERROR)<< "QQLogin::CheckQRC error. url"<< ssm.str();
             return false;
         }
 		auto res = CLIENT->GetResponse();
-		LOG(INFO) << "QQLogin::CheckQRC succ. " << res->m_data;
+		if (200 != res->m_code)
+		{
+			LOG(ERROR) << "QQLogin::CheckQRC succ. ";
+			LOG(ERROR) << ssm.str();
+			LOG(ERROR) << res->m_data;
+			return false;
+		}
 
 		std::string response_data(res->m_data);
 		std::string returnMsg;
@@ -104,7 +125,7 @@ qq::QRC_Code qq::QQLogin::ParseCheckQRC(const std::string &msg, std::string &ret
             return SUCCESS;
         case INVALID:
             returnMsg = "二维码已经失效,请重新加载!";
-            break;
+            return INVALID;
         case VALID:
             returnMsg = "二维码未失效,请扫描!";
             return VALID;
@@ -157,9 +178,8 @@ bool qq::QQLogin::GetVFWebqq() {
 
 	LOG(INFO) << "QQLogin::GetVFWebqq succ.code:" << res->m_code << " data:"<< res->m_data;
 
-    Json::Reader reader;
     Json::Value root;
-    if(!reader.parse(res->m_data.c_str(),root)){
+    if(!StringToJsonValue(root,res->m_data)){
         return false;
     }
     int retcode = root["retcode"].asInt();
@@ -188,11 +208,11 @@ bool qq::QQLogin::Login() {
     }
 	auto res = CLIENT->GetResponse();
 	LOG(INFO) << "QQLogin::Login succ.code:" << res->m_code << " data:" << res->m_data;
-    Json::Reader reader;
-    Json::Value root;
-    if(!reader.parse(res->m_data.c_str(),root)){
-        return false;
-    }
+	Json::Value root;
+	if (!StringToJsonValue(root, res->m_data))
+	{
+		return false;
+	}
     int retcode = root["retcode"].asInt();
     if(0 !=retcode){
         return false;
@@ -207,7 +227,7 @@ bool qq::QQLogin::Login() {
     return true;
 }
 
-const std::unordered_map<std::string, std::string> qq::QQLogin::GetSession()
+const qq::QQSession qq::QQLogin::GetSession()
 {
 	return m_session;
 }

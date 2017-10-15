@@ -48,6 +48,9 @@
     <ClCompile Include="src\set\qq_message.cc">
       <Filter>src\set</Filter>
     </ClCompile>
+    <ClCompile Include="src\qq_control.cc">
+      <Filter>src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="src\net\http_client.h">
@@ -82,6 +85,12 @@
     </ClInclude>
     <ClInclude Include="src\set\qq_message.h">
       <Filter>src\set</Filter>
+    </ClInclude>
+    <ClInclude Include="src\other\base.h">
+      <Filter>src\other</Filter>
+    </ClInclude>
+    <ClInclude Include="src\qq_control.h">
+      <Filter>src</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

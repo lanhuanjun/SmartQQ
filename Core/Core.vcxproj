@@ -102,11 +102,12 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
-      <PrecompiledHeader>Use</PrecompiledHeader>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;_CONSOLE;_SCL_SECURE_NO_WARNINGS%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
+      <DisableSpecificWarnings>4819;%(DisableSpecificWarnings)</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -154,6 +155,7 @@
     <ClCompile Include="src\net\http_client.cc" />
     <ClCompile Include="src\other\easylogging++.cc" />
     <ClCompile Include="src\other\platform.cpp" />
+    <ClCompile Include="src\qq_control.cc" />
     <ClCompile Include="src\request\qq_contact.cc" />
     <ClCompile Include="src\request\qq_login.cc" />
     <ClCompile Include="src\request\qq_poll.cpp" />
@@ -164,9 +166,11 @@
   <ItemGroup>
     <ClInclude Include="src\core_main.h" />
     <ClInclude Include="src\net\http_client.h" />
+    <ClInclude Include="src\other\base.h" />
     <ClInclude Include="src\other\easylogging++.h" />
     <ClInclude Include="src\other\platform.h" />
     <ClInclude Include="src\other\log.h" />
+    <ClInclude Include="src\qq_control.h" />
     <ClInclude Include="src\request\qq_contact.h" />
     <ClInclude Include="src\request\qq_login.h" />
     <ClInclude Include="src\request\qq_poll.h" />

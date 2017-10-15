@@ -1,10 +1,9 @@
-#include "../Core/src/net/http_client.h"
+#include <iostream>
+#include <map>
+#include <unordered_map>
+using namespace std;
 int main(int argc, char* argv[])
 {
-	qq::HttpClient *client = new qq::HttpClient();
-	client->Init();
-	client->SetUrl("https://www.baidu.com");
-	client->Execute();
-	client->Destroy();
+	std::unordered_map<int, int> m;
 	return 0;
 }

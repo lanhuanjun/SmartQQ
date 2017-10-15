@@ -9,6 +9,12 @@
 #include "../set/qq_info.h"
 
 namespace qq{
+
+	typedef std::unordered_map<uint64, GroupInfo> GroupMap;
+	typedef std::unordered_map<uint64, DiscusDetailInfo> DiscusMap;
+	typedef std::unordered_map<uint64, RecentItem> RecentMap;
+	typedef std::unordered_map<int, FriendGroup> FriendGroupMap;
+	typedef std::unordered_map<uint64, FriendInfo> FriendInfoMap;
     class QQContact {
     public:
         QQContact(HttpClient *client);
@@ -25,19 +31,19 @@ namespace qq{
          * 获取群列表
          * @return
          */
-        bool GetGroupNameList(QQSession &session,std::unordered_map<uint64 ,GroupInfo> &groupList);
+        bool GetGroupNameList(QQSession &session, GroupMap &groupMap);
         /**
          * 获取讨论组列表
          * @return
          */
-        bool GetDicusList(QQSession &session,std::unordered_map<uint64 ,DiscusDetailInfo> &discusList);
+        bool GetDicusList(QQSession &session,DiscusMap &discusMap);
 
 
         /**
          * 获取历史聊天记录列表
          * @return
          */
-        bool GetRecentList(QQSession &session,std::unordered_map<uint64 ,RecentItem> &recentList);
+        bool GetRecentList(QQSession &session,RecentMap &recentMap);
 
     private:
         /**
@@ -52,27 +58,27 @@ namespace qq{
          * @param json 响应的Json数据
          * @return 是否解析成功
          */
-        bool PaserUserFriendsJson(const std::string &json,std::unordered_map<int,FriendGroup> &friendGroups,std::unordered_map<uint64,FriendInfo> &friendList);
+        bool PaserUserFriendsJson(const std::string &json,FriendGroupMap &friendGroups,FriendInfoMap &friendInfos);
 
         /**
          * 解析获取群列表时得到的Json数据
          * @param json 响应的Json数据
          * @return 是否解析成功
          */
-        bool PaserGroupNameListJson(const std::string &json,std::unordered_map<uint64 ,GroupInfo> &groupInfos);
+        bool PaserGroupNameListJson(const std::string &json,GroupMap &groupInfos);
         /**
          * 解析获取讨论组列表时得到的Json数据
          * @param json 响应的Json数据
          * @return 是否解析成功
          */
-        bool PaserDiscusListJson(const std::string &json,std::unordered_map<uint64 ,DiscusDetailInfo> &discusInfos);
+        bool PaserDiscusListJson(const std::string &json,DiscusMap &discusInfos);
 
         /**
          * 解析获取历史聊天列表时得到的Json数据
          * @param json 响应的Json数据
          * @return 是否解析成功
          */
-        bool PaserRecentListJson(const std::string &json,std::unordered_map<uint64 ,RecentItem> &recentList);
+        bool PaserRecentListJson(const std::string &json,RecentMap &recentList);
     };
 };
 

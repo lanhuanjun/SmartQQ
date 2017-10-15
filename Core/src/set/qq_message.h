@@ -5,15 +5,15 @@
 #ifndef QQCORE_QQ_MESSAGE_H
 #define QQCORE_QQ_MESSAGE_H
 
-#include "../../../third/include/json/json.h"
 #include "qq_info.h"
+#include "../other/base.h"
+
 #include <iostream>
 #include <sstream>
 
 namespace qq{
 
     enum ContentMessageType{STRING,FACE};
-
     class QQMessage {
     public:
         QQMessage();
@@ -74,10 +74,7 @@ namespace qq{
                 fontValue.append("font");
                 fontValue.append(font.toJson());
                 root.append(fontValue);
-
-                Json::FastWriter writer;
-                std::string sourceMessage = writer.write(root);
-                return sourceMessage.substr(0,sourceMessage.length()-1);
+                return JsonNodeToString(root);
             }
         };
         struct StructSendMessage{
@@ -106,9 +103,7 @@ namespace qq{
                 root["clientid"] = client_id;
                 root["msg_id"] = msg_id;
                 root["psessionid"] = psessionid;
-                Json::FastWriter fastWriter;
-                std::string str = fastWriter.write(root);
-                return str;
+                return JsonNodeToString(root);
             }
         };
 
