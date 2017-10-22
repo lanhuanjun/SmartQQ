@@ -30,10 +30,11 @@ bool qq::HttpClient::Init() {
     curl_easy_setopt(m_handle,CURLOPT_TIMEOUT,100L);//设置请求超时
     curl_easy_setopt(m_handle,CURLOPT_WRITEFUNCTION,ContentCallback);
     curl_easy_setopt(m_handle,CURLOPT_WRITEDATA,m_content_buf);
-	curl_easy_setopt(m_handle, CURLOPT_HEADERFUNCTION, HeaderCallback);
-	curl_easy_setopt(m_handle, CURLOPT_HEADERDATA, m_header_buf);
+	curl_easy_setopt(m_handle,CURLOPT_HEADERFUNCTION, HeaderCallback);
+	curl_easy_setopt(m_handle,CURLOPT_HEADERDATA, m_header_buf);
     curl_easy_setopt(m_handle,CURLOPT_FOLLOWLOCATION,0L);//禁止重定向
-	curl_easy_setopt(m_handle, CURLOPT_COOKIEFILE, "");//开启Cookie引擎
+	curl_easy_setopt(m_handle, CURLOPT_ACCEPT_ENCODING, "gzip");
+
     return true;
 }
 
@@ -68,14 +69,14 @@ bool qq::HttpClient::Execute(RequestMethod method) {
     CURLcode ret = curl_easy_perform(m_handle);
 	//复位响应数据
 	m_res.Reset();
+	ParseResponseData();
     if(CURLE_OK == ret){
-		ParseResponseData();
 		m_content_buf->m_data_size = 0;
 		m_header_buf->m_data_size = 0;
     }
 	else
 	{
-		LOG(ERROR) << "qq::HttpClient::Execute response err. code:"<< ret << curl_easy_strerror(ret);
+		LOG(ERROR) << "qq::HttpClient::Execute response err. code:"<< ret << " "<< curl_easy_strerror(ret);
 	}
 	if(nullptr != headers)
 	{
@@ -104,7 +105,10 @@ void qq::HttpClient::Destroy() {
 
 void qq::HttpClient::ParseResponseData()
 {
-	m_res.m_data.assign(m_content_buf->m_data, m_content_buf->m_data_size);
+	if (0 != m_content_buf->m_data_size)
+	{
+		m_res.m_data.assign(m_content_buf->m_data, m_content_buf->m_data_size);
+	}
 	ParserHeader();
 }
 
@@ -120,7 +124,7 @@ void qq::HttpClient::SetRequestData(curl_slist*headers,RequestMethod method)
 		if (!m_post_fields.empty()){
 			std::string buf;
 			for (auto &item : m_post_fields) {
-				buf.append(item.first).append('=',1).append(item.second).append('&',1);
+				buf.append(item.first).append(1,'=').append(item.second).append(1,'&');
 			}
 			buf[buf.length() - 1] = '\0';
 			curl_easy_setopt(m_handle, CURLOPT_POSTFIELDSIZE, buf.length() - 1);
@@ -131,23 +135,27 @@ void qq::HttpClient::SetRequestData(curl_slist*headers,RequestMethod method)
 	//设置请求头
 	for (auto &item : m_default_headers) {
 		std::string buf;
-		buf.append(item.first).append(':', 1).append(item.second);
+		buf.append(item.first).append(1,':').append(item.second);
 		headers = curl_slist_append(headers, buf.c_str());
 	}
 	for (auto &item : m_temp_headers) {
 		std::string buf;
-		buf.append(item.first).append(':', 1).append(item.second);
+		buf.append(item.first).append(1,':').append(item.second);
 		headers = curl_slist_append(headers, buf.c_str());
 	}
-	curl_easy_setopt(m_handle, CURLOPT_HTTPHEADER, headers);
+	if (nullptr != headers)
+	{
+		curl_easy_setopt(m_handle, CURLOPT_HTTPHEADER, headers);
+	}
 	//设置请求Cookies
 	std::string cookies;
 	for (auto &item : m_send_cookies) {
-		cookies.append(item.first).append('=', 1).append(item.second).append(';', 1);
+		cookies.append(item.first).append(1,'=').append(item.second).append(1,';');
 	}
 	if (!cookies.empty()) {
 		cookies[cookies.length() - 1] = '\0';
 		curl_easy_setopt(m_handle, CURLOPT_COOKIE, cookies.c_str());
+		LOG(DEBUG) << "send cookies:" << cookies << std::endl;
 	}
 	//清空所有数据
 	m_url.clear();
@@ -158,6 +166,11 @@ void qq::HttpClient::SetRequestData(curl_slist*headers,RequestMethod method)
 
 void qq::HttpClient::ParserHeader()
 {
+	if (0 == m_header_buf->m_data_size)
+	{
+		LOG(ERROR) << "HttpClient::ParserHeader data size is 0";
+		return;
+	}
 	std::string str_header(m_header_buf->m_data,m_header_buf->m_data_size);
 	//响应码
 	size_t offset = 0;

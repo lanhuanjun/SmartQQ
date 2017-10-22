@@ -13,7 +13,7 @@ qq::QQControl::QQControl() {
         throw ("can't init client");
     }
     CLIENT->SetDefaultHeader(Header("Accept","*/*"));
-    CLIENT->SetDefaultHeader(Header("Accept-Encoding","gzip, deflate, sdch"));
+    CLIENT->SetDefaultHeader(Header("Accept-Encoding","gzip, deflate"));
     CLIENT->SetDefaultHeader(Header("Accept-Language","en-US,en;q=0.5"));
     CLIENT->SetDefaultHeader(Header("Connection","keep-alive"));
     CLIENT->SetDefaultHeader(Header("User-Agent","Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/52.0.2743.116 Safari/537.36"));
@@ -43,8 +43,6 @@ bool qq::QQControl::GetQRCImg(std::string & data) {
     if(!m_login->GetLoginSig()){
         return nullptr;
     }
-    m_login->GetQRC(data);
-	data.clear();
     return m_login->GetQRC(data);
 }
 
@@ -181,7 +179,7 @@ bool qq::QQControl::StartPoll(bool receiveMessageListener(bool hasMessage,Receiv
 	return true;
 }
 
-bool qq::QQControl::SendOneMessage(qq::SendMessage &sendMessage) {
+bool qq::QQControl::SendOneMessage(qq::SendQQMessage &sendMessage) {
     if(nullptr == m_temp){
         return false;
     }

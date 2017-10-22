@@ -74,6 +74,7 @@
 #if defined(_AIX) || defined(__NOVELL_LIBC__) || defined(__NetBSD__) || \
     defined(__minix) || defined(__SYMBIAN32__) || defined(__INTEGRITY) || \
     defined(ANDROID) || defined(__ANDROID__) || defined(__OpenBSD__) || \
+    defined(__CYGWIN__) || \
    (defined(__FreeBSD_version) && (__FreeBSD_version < 800000))
 #include <sys/select.h>
 #endif
@@ -131,6 +132,27 @@ typedef int curl_socket_t;
 #endif
 #define curl_socket_typedef
 #endif /* curl_socket_typedef */
+
+/* enum for the different supported SSL backends */
+typedef enum {
+  CURLSSLBACKEND_NONE = 0,
+  CURLSSLBACKEND_OPENSSL = 1,
+  CURLSSLBACKEND_GNUTLS = 2,
+  CURLSSLBACKEND_NSS = 3,
+  CURLSSLBACKEND_OBSOLETE4 = 4,  /* Was QSOSSL. */
+  CURLSSLBACKEND_GSKIT = 5,
+  CURLSSLBACKEND_POLARSSL = 6,
+  CURLSSLBACKEND_WOLFSSL = 7,
+  CURLSSLBACKEND_SCHANNEL = 8,
+  CURLSSLBACKEND_DARWINSSL = 9,
+  CURLSSLBACKEND_AXTLS = 10,
+  CURLSSLBACKEND_MBEDTLS = 11
+} curl_sslbackend;
+
+/* aliases for library clones and renames */
+#define CURLSSLBACKEND_LIBRESSL CURLSSLBACKEND_OPENSSL
+#define CURLSSLBACKEND_BORINGSSL CURLSSLBACKEND_OPENSSL
+#define CURLSSLBACKEND_CYASSL CURLSSLBACKEND_WOLFSSL
 
 struct curl_httppost {
   struct curl_httppost *next;       /* next entry in the list */
@@ -335,7 +357,7 @@ typedef size_t (*curl_read_callback)(char *buffer,
                                       size_t nitems,
                                       void *instream);
 
-typedef enum  {
+typedef enum {
   CURLSOCKTYPE_IPCXN,  /* socket created for a specific IP connection */
   CURLSOCKTYPE_ACCEPT, /* socket created by accept() call */
   CURLSOCKTYPE_LAST    /* never use */
@@ -377,7 +399,7 @@ typedef enum {
   CURLIOE_LAST           /* never use */
 } curlioerr;
 
-typedef enum  {
+typedef enum {
   CURLIOCMD_NOP,         /* no operation */
   CURLIOCMD_RESTARTREAD, /* restart the read stream from start */
   CURLIOCMD_LAST         /* never use */
@@ -1940,18 +1962,17 @@ typedef enum {
   CURL_TIMECOND_LAST
 } curl_TimeCond;
 
+/* Special size_t value signaling a zero-terminated string. */
+#define CURL_ZERO_TERMINATED ((size_t) -1)
 
 /* curl_strequal() and curl_strnequal() are subject for removal in a future
-   libcurl, see lib/README.curlx for details
-
-   !checksrc! disable SPACEBEFOREPAREN 2
-*/
-CURL_EXTERN int (curl_strequal)(const char *s1, const char *s2);
-CURL_EXTERN int (curl_strnequal)(const char *s1, const char *s2, size_t n);
+   release */
+CURL_EXTERN int curl_strequal(const char *s1, const char *s2);
+CURL_EXTERN int curl_strnequal(const char *s1, const char *s2, size_t n);
 
 /* Mime/form handling support. */
-typedef struct Curl_mime        curl_mime;      /* Mime context. */
-typedef struct Curl_mimepart    curl_mimepart;  /* Mime part context. */
+typedef struct curl_mime_s      curl_mime;      /* Mime context. */
+typedef struct curl_mimepart_s  curl_mimepart;  /* Mime part context. */
 
 /*
  * NAME curl_mime_init()
@@ -1989,8 +2010,7 @@ CURL_EXTERN curl_mimepart *curl_mime_addpart(curl_mime *mime);
  *
  * Set mime/form part name.
  */
-CURL_EXTERN CURLcode curl_mime_name(curl_mimepart *part,
-                                    const char *name, ssize_t namesize);
+CURL_EXTERN CURLcode curl_mime_name(curl_mimepart *part, const char *name);
 
 /*
  * NAME curl_mime_filename()
@@ -2018,7 +2038,7 @@ CURL_EXTERN CURLcode curl_mime_type(curl_mimepart *part, const char *mimetype);
  *
  * Set mime data transfer encoder.
  */
-CURL_EXTERN CURLcode curl_mime_encoder(struct Curl_mimepart *part,
+CURL_EXTERN CURLcode curl_mime_encoder(curl_mimepart *part,
                                        const char *encoding);
 
 /*
@@ -2029,7 +2049,7 @@ CURL_EXTERN CURLcode curl_mime_encoder(struct Curl_mimepart *part,
  * Set mime part data source from memory data,
  */
 CURL_EXTERN CURLcode curl_mime_data(curl_mimepart *part,
-                                    const char *data, ssize_t datasize);
+                                    const char *data, size_t datasize);
 
 /*
  * NAME curl_mime_filedata()
@@ -2318,6 +2338,47 @@ struct curl_slist {
 };
 
 /*
+ * NAME curl_global_sslset()
+ *
+ * DESCRIPTION
+ *
+ * When built with multiple SSL backends, curl_global_sslset() allows to
+ * choose one. This function can only be called once, and it must be called
+ * *before* curl_global_init().
+ *
+ * The backend can be identified by the id (e.g. CURLSSLBACKEND_OPENSSL). The
+ * backend can also be specified via the name parameter (passing -1 as id).
+ * If both id and name are specified, the name will be ignored. If neither id
+ * nor name are specified, the function will fail with
+ * CURLSSLSET_UNKNOWN_BACKEND and set the "avail" pointer to the
+ * NULL-terminated list of available backends.
+ *
+ * Upon success, the function returns CURLSSLSET_OK.
+ *
+ * If the specified SSL backend is not available, the function returns
+ * CURLSSLSET_UNKNOWN_BACKEND and sets the "avail" pointer to a NULL-terminated
+ * list of available SSL backends.
+ *
+ * The SSL backend can be set only once. If it has already been set, a
+ * subsequent attempt to change it will result in a CURLSSLSET_TOO_LATE.
+ */
+
+typedef struct {
+  curl_sslbackend id;
+  const char *name;
+} curl_ssl_backend;
+
+typedef enum {
+  CURLSSLSET_OK = 0,
+  CURLSSLSET_UNKNOWN_BACKEND,
+  CURLSSLSET_TOO_LATE,
+  CURLSSLSET_NO_BACKENDS /* libcurl was built without any SSL support */
+} CURLsslset;
+
+CURL_EXTERN CURLsslset curl_global_sslset(curl_sslbackend id, const char *name,
+                                          const curl_ssl_backend ***avail);
+
+/*
  * NAME curl_slist_append()
  *
  * DESCRIPTION
@@ -2356,27 +2417,6 @@ struct curl_certinfo {
                                    linked list with textual information in the
                                    format "name: value" */
 };
-
-/* enum for the different supported SSL backends */
-typedef enum {
-  CURLSSLBACKEND_NONE = 0,
-  CURLSSLBACKEND_OPENSSL = 1,
-  CURLSSLBACKEND_GNUTLS = 2,
-  CURLSSLBACKEND_NSS = 3,
-  CURLSSLBACKEND_OBSOLETE4 = 4,  /* Was QSOSSL. */
-  CURLSSLBACKEND_GSKIT = 5,
-  CURLSSLBACKEND_POLARSSL = 6,
-  CURLSSLBACKEND_WOLFSSL = 7,
-  CURLSSLBACKEND_SCHANNEL = 8,
-  CURLSSLBACKEND_DARWINSSL = 9,
-  CURLSSLBACKEND_AXTLS = 10,
-  CURLSSLBACKEND_MBEDTLS = 11
-} curl_sslbackend;
-
-/* aliases for library clones and renames */
-#define CURLSSLBACKEND_LIBRESSL CURLSSLBACKEND_OPENSSL
-#define CURLSSLBACKEND_BORINGSSL CURLSSLBACKEND_OPENSSL
-#define CURLSSLBACKEND_CYASSL CURLSSLBACKEND_WOLFSSL
 
 /* Information about the SSL library used and the respective internal SSL
    handle, which can be used to obtain further information regarding the

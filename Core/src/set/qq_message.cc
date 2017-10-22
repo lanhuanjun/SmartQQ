@@ -4,7 +4,7 @@
 
 #include "qq_message.h"
 
-qq::SendMessage::SendMessage(uint64 uin,
+qq::SendQQMessage::SendQQMessage(uint64 uin,
                                   uint64 msg_id,
                                   int face,
                                   qq::MessageType type,
@@ -17,34 +17,34 @@ qq::SendMessage::SendMessage(uint64 uin,
 
 }
 
-qq::SendMessage::~SendMessage() {
+qq::SendQQMessage::~SendQQMessage() {
 
 }
 
-std::string qq::SendMessage::PackageMessage() {
+std::string qq::SendQQMessage::PackageMessage() {
     return message.toJsonString();;
 }
 
-qq::SendMessage &qq::SendMessage::SetFontName(std::string fontName) {
+qq::SendQQMessage &qq::SendQQMessage::SetFontName(std::string fontName) {
     message.content.font.name = fontName;
     return *this;
 }
 
-qq::SendMessage &qq::SendMessage::SetFontSize(int size) {
+qq::SendQQMessage &qq::SendQQMessage::SetFontSize(int size) {
     message.content.font.size = size;
     return *this;
 }
 
-qq::SendMessage &qq::SendMessage::SetFontColor(std::string fontColor) {
+qq::SendQQMessage &qq::SendQQMessage::SetFontColor(std::string fontColor) {
     message.content.font.color = fontColor;
     return *this;
 }
 
-qq::MessageType qq::SendMessage::GetMessageType() {
+qq::MessageType qq::SendQQMessage::GetMessageType() {
     return message.msg_type;
 }
 
-qq::SendMessage &qq::SendMessage::SetPsessionid(std::string psessionid) {
+qq::SendQQMessage &qq::SendQQMessage::SetPsessionid(std::string psessionid) {
     message.psessionid = psessionid;
     return *this;
 }
@@ -105,8 +105,11 @@ void qq::ReceiveMessage::ParseMessage(Json::Value result) {
 qq::MessageType qq::ReceiveMessage::GetMessageType() {
     return message.messageType;
 }
-std::vector<std::pair<qq::ContentMessageType,std::string>> qq::ReceiveMessage::GetMessage() {
-    return message.content.msg;
+
+const qq::MessageContent  qq::ReceiveMessage::GetQQMessage() const
+{
+	// TODO: 在此处插入 return 语句
+	return message.content;
 }
 
 uint64 qq::ReceiveMessage::GetId() {
@@ -127,13 +130,4 @@ uint64 qq::ReceiveMessage::GetReceiveTime() {
 
 uint64 qq::ReceiveMessage::GetToUin() {
     return message.to_uin;
-}
-
-
-qq::QQMessage::QQMessage() {
-
-}
-
-qq::QQMessage::~QQMessage() {
-
 }

@@ -22,8 +22,18 @@ namespace qq{
 
 		JSONCPP_STRING errs;
 		
-		bool is_ok = reader->parse(&str[0],&str[str.length()-1],&root,&errs);
+		bool is_ok = reader->parse(str.begin()._Ptr,str.end()._Ptr,&root,&errs);
 		return errs.empty() && is_ok;
+	}
+
+	inline int Hash33(std::string str)
+	{
+		int e = 0;
+		for (char c : str)
+		{
+			e += (e << 5) + (int)c;
+		}
+		return 0x7fffffff & e;
 	}
 }
 #endif // !QQCORE_BASE_H_

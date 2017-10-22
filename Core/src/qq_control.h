@@ -137,7 +137,7 @@ namespace qq{
          * @param sendMessage
          * @return
          */
-        bool SendOneMessage(SendMessage &sendMessage);
+        bool SendOneMessage(SendQQMessage &sendMessage);
     };
 };
 #endif //QQCORE_QQ_CONTROL_H

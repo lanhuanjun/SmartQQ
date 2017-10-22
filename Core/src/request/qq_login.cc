@@ -56,8 +56,19 @@ bool qq::QQLogin::GetQRC(std::string &store) {
 }
 
 bool qq::QQLogin::CheckQRC(void listener(QRC_Code, std::string)) {
+	auto qrsig = m_session.find("qrsig");
+	if (qrsig == m_session.end())
+	{
+		LOG(ERROR) << "QQLogin::CheckQRC can not find qrsig" << std::endl;
+	}
+
 	std::stringstream ssm;
-	ssm << "https://ssl.ptlogin2.qq.com/ptqrlogin?u1=http%3A%2F%2Fw.qq.com%2Fproxy.html&ptqrtoken=602151895&ptredirect=0&h=1&t=1&g=1&from_ui=1&ptlang=2052&action=0-0-1508051917786&js_ver=10230&js_type=1&login_sig="
+
+	
+
+	ssm << "https://ssl.ptlogin2.qq.com/ptqrlogin?u1=http%3A%2F%2Fw.qq.com%2Fproxy.html&ptqrtoken="
+		<<Hash33(qrsig->second) << "&ptredirect=0&h=1&t=1&g=1&from_ui=1&ptlang=2052&action=0-0-"
+		<< time(NULL) << "&js_ver=10230&js_type=1&login_sig="
 		<< m_session["pt_login_sig"]
 		<< "P&pt_uistyle=40&aid=501004106&daid=164&mibao_css=m_webqq&";
 	while (true){
@@ -81,7 +92,7 @@ bool qq::QQLogin::CheckQRC(void listener(QRC_Code, std::string)) {
 		auto res = CLIENT->GetResponse();
 		if (200 != res->m_code)
 		{
-			LOG(ERROR) << "QQLogin::CheckQRC succ. ";
+			LOG(ERROR) << "QQLogin::CheckQRC error. ";
 			LOG(ERROR) << ssm.str();
 			LOG(ERROR) << res->m_data;
 			return false;
@@ -93,10 +104,7 @@ bool qq::QQLogin::CheckQRC(void listener(QRC_Code, std::string)) {
         listener(code,returnMsg);
         if(SUCCESS == code){
             for(auto item:res->m_cookies){
-                if(item.first == "ptwebqq"){
-                    m_session.insert(item);
-					break;
-                }
+				m_session.insert(item);
             }
             return true;
         }
@@ -140,7 +148,7 @@ qq::QRC_Code qq::QQLogin::ParseCheckQRC(const std::string &msg, std::string &ret
 
 bool qq::QQLogin::CheckSig(std::string url) {
     CLIENT->SetUrl(url);
-    CLIENT->SetTempHeader(Header("Host","ptlogin4.web2.qq.com"));
+    CLIENT->SetTempHeader(Header("Host","ptlogin2.web2.qq.com"));
     CLIENT->SetTempHeader(Header("Upgrade-Insecure-Requests","1"));
     if(!CLIENT->Execute(HttpClient::GET)){
 		LOG(ERROR) << "QQLogin::CheckSig error. url:" << url;
@@ -149,15 +157,8 @@ bool qq::QQLogin::CheckSig(std::string url) {
 	auto res = CLIENT->GetResponse();
 	LOG(INFO) << "QQLogin::CheckSig succ.code:" << res->m_code;
     for(auto item:res->m_cookies){
-        if(item.first == "p_skey"){
-            m_session.insert(item);
-			LOG(INFO) << "QQLogin::CheckSig succ. url:" << url;
-        }
-        if(item.first == "uin"){
-            std::string value = item.second.substr(2,item.first.length()-2);
-            m_session.insert(std::make_pair(item.first,value));
-			LOG(INFO) << "QQLogin::CheckSig succ. uin:" << item.first;
-        }
+		LOG(INFO) << "QQLogin::CheckSig. cooke[" << item.first << ":" << item.second;
+		m_session.insert(item);
     }
     return true;
 }
@@ -198,17 +199,24 @@ bool qq::QQLogin::Login() {
     CLIENT->SetTempHeader(Header("Origin","http://d1.web2.qq.com"));
     CLIENT->SetTempHeader(Header("Referer","http://d1.web2.qq.com/proxy.html?v=20151105001&callback=1&id=2"));
 
-    std::string r = "{\"ptwebqq\":\""+m_session["ptwebqq"]+"\",\"clientid\":53999199,\"psessionid\":\"\",\"status\":\"online\"}";
+    std::string r = "{\"ptwebqq\":\"\",\"clientid\":53999199,\"psessionid\":\"\",\"status\":\"online\"}";
+
+	LOG(DEBUG) << "QQLogin::Login post: r = " << r;
 
     CLIENT->SetPostField(Field("r",CLIENT->URLEncoded(r)));
 
     if(!CLIENT->Execute(HttpClient::POST)){
-
+		LOG(ERROR) << "QQLogin::Login execute error.";
         return false;
     }
 	auto res = CLIENT->GetResponse();
-	LOG(INFO) << "QQLogin::Login succ.code:" << res->m_code << " data:" << res->m_data;
+	LOG(INFO) << "QQLogin::Login succ. size:" << res->m_data.size() << " data:" << res->m_data;
 	Json::Value root;
+	std::ofstream os("E:\\a.txt",std::ios::trunc|std::ios::binary);
+	os << res->m_data;
+	os.flush();
+	os.close();
+	
 	if (!StringToJsonValue(root, res->m_data))
 	{
 		return false;

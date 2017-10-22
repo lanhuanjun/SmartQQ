@@ -10,6 +10,8 @@ namespace qq
 	{
 	public:
 		void StartPoll(QQSession &session, bool receiveMessageListener(bool hasMessage, ReceiveMessage &receiveMessage));
+		void StartPoll(HttpClient * CLIENT,QQSession &session, bool receiveMessageListener(bool hasMessage, ReceiveMessage &receiveMessage));
+
 	};
 };
 

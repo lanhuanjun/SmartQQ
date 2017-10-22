@@ -9,7 +9,8 @@ INITIALIZE_EASYLOGGINGPP
 
 void __log_init()
 {
-	el::Configurations conf("E:\\VisualStudio\\SmartQQ\\out\\log.conf");
+	std::string config_path = get_exe_path() + "\\log.conf";
+	el::Configurations conf(config_path);
 	el::Loggers::reconfigureAllLoggers(conf);
 }
 

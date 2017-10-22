@@ -7,7 +7,7 @@ using namespace qq;
 
 bool SaveImg(const string & data)
 {
-	ofstream file_stream("E:\\qrc.png", std::ios::binary|ios::app);
+	ofstream file_stream("E:\\qrc.png", std::ios::binary|ios::trunc);
 	file_stream << data;
 	file_stream.flush();
 	file_stream.close();
@@ -18,7 +18,7 @@ std::string m_url;
 
 void Listener(QRC_Code code, std::string msg)
 {
-	printf("%s", msg.c_str());
+	std::cout << msg << std::endl;
 	switch (code)
 	{
 	case qq::SUCCESS:
@@ -40,9 +40,11 @@ bool receiveMessageListener(bool hasMessage, ReceiveMessage &receiveMessage)
 {
 	if (hasMessage)
 	{
-		for (auto iter = receiveMessage.GetMessage().begin(); iter != receiveMessage.GetMessage().end();++iter)
+		MessageContent content = receiveMessage.GetQQMessage();
+		for (auto iter = content.msg.begin(); iter != content.msg.end();++iter)
 		{
-			LOG(DEBUG) <<"type:"<<iter->first<<" msg:" <<iter->second;
+			//LOG(DEBUG) <<"type:"<<iter->first<<" msg:" <<iter->second;
+			std::cout << "type:" << iter->first << " msg:" << iter->second;
 		}
 	}
 	return true;
@@ -50,6 +52,7 @@ bool receiveMessageListener(bool hasMessage, ReceiveMessage &receiveMessage)
 int main(int argc, char* argv[])
 {
 	core_global_init(argc, argv);
+	
 	QQControl ctrl;
 	std::string img;
 	if (!ctrl.GetQRCImg(img))
@@ -68,6 +71,21 @@ int main(int argc, char* argv[])
 		perror("GetControlNeed error.");
 		return 0;
 	}
+
+	FriendBaseInfo friends;
+	ctrl.GetUserFriends(friends);
+	GroupMap groupMap;
+	ctrl.GetGroupNameList(groupMap);
+	DiscusMap discuss;
+	ctrl.GetDicusList(discuss);
+	RecentMap recents;
+	ctrl.GetRecentList(recents);
+	std::list<FriendOnLine> onlines;
+	ctrl.GetOnLineBuddies(onlines);
+	QQInfo self_info;
+	ctrl.GetSelfInfo(self_info);
+	ctrl.ChangeStatus(QQStatus::BUSY);
+	//ctrl.GetFriendQQNum(uint64 uin);
 	ctrl.StartPoll(receiveMessageListener);
 
 	core_global_clean_up();

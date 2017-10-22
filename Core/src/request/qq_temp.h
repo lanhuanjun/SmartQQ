@@ -82,7 +82,7 @@ namespace qq{
          * @param sendMessage
          * @return
          */
-        bool SendOneMessage(QQSession &session,SendMessage sendMessage);
+        bool SendOneMessage(QQSession &session,SendQQMessage sendMessage);
     private:
         /**
          * 解析在线好友列表

@@ -458,7 +458,7 @@ bool qq::QQTemp::ChangeStatus(QQSession &session, QQStatus status) {
     return 0 == retcode;
 }
 
-bool qq::QQTemp::SendOneMessage(QQSession &session, SendMessage sendMessage) {
+bool qq::QQTemp::SendOneMessage(QQSession &session, SendQQMessage sendMessage) {
 
     switch (sendMessage.GetMessageType()) {
         case USER:
