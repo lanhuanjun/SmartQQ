@@ -33,6 +33,7 @@ bool qq::HttpClient::Init() {
 	curl_easy_setopt(m_handle,CURLOPT_HEADERFUNCTION, HeaderCallback);
 	curl_easy_setopt(m_handle,CURLOPT_HEADERDATA, m_header_buf);
     curl_easy_setopt(m_handle,CURLOPT_FOLLOWLOCATION,0L);//禁止重定向
+	curl_easy_setopt(m_handle,CURLOPT_COOKIEFILE, "");//开启Cookie引擎
 	curl_easy_setopt(m_handle, CURLOPT_ACCEPT_ENCODING, "gzip");
 
     return true;
