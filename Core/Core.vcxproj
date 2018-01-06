@@ -151,9 +151,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <Text Include="ReadMe.txt" />
-  </ItemGroup>
-  <ItemGroup>
     <ClCompile Include="src\net\http_client.cc" />
     <ClCompile Include="src\other\easylogging++.cc" />
     <ClCompile Include="src\other\platform.cpp" />
