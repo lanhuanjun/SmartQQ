@@ -21,8 +21,8 @@ namespace qq{
 		std::unique_ptr<Json::CharReader> reader(builder.newCharReader());
 
 		JSONCPP_STRING errs;
-		
-		bool is_ok = reader->parse(str.begin()._Ptr,str.end()._Ptr,&root,&errs);
+		auto data = str.c_str();
+		bool is_ok = reader->parse(data, data + (str.length() -1),&root,&errs);
 		return errs.empty() && is_ok;
 	}
 
