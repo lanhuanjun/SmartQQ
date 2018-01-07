@@ -11,6 +11,11 @@ THIRD_INCLUDE_PATH = $(THIRD_PATH)/include
 THIRD_LIB_PATH = $(THIRD_PATH)/lib
 THIRD_UNIX_LIB_PATH = $(THIRD_PATH)/unix
 OUT_PATH = out
+
+test:
+	$(CXX) $(CXXFLAGS) -o test $(OUT_PATH)/main.o $(OUT_PATH)/request.o $(OUT_PATH)/set.o $(OUT_PATH)/other.o $(OUT_PATH)/http_client.o \
+	$(THIRD_UNIX_LIB_PATH)/libjsoncpp.a -L $(THIRD_UNIX_LIB_PATH) -lcurl
+
 net:
 	$(CXX) $(CXXFLAGS) -c $(NET_SRC_PATH)/http_client.cc $(NET_SRC_PATH)/http_client.h -o $(OUT_PATH)/http_client.o
 other:
@@ -32,6 +37,3 @@ main:
 	$(SRC_PATH)/qq_control.h $(SRC_PATH)/qq_control.cc \
 	$(SRC_PATH)/core_main.h $(SRC_PATH)/test.cpp \
 	-o $(OUT_PATH)/main.o
-test:
-	$(CXX) $(CXXFLAGS) -o test $(OUT_PATH)/main.o $(OUT_PATH)/request.o $(OUT_PATH)/set.o $(OUT_PATH)/other.o $(OUT_PATH)/http_client.o \
-	$(THIRD_UNIX_LIB_PATH)/libjsoncpp.a -L $(THIRD_UNIX_LIB_PATH) -lcurl
