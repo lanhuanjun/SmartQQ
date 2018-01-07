@@ -1,6 +1,6 @@
 #Smart QQ Makefile
 CXX = g++
-CXXFLAGS = -Wall -std=c++14
+CXXFLAGS = -W -std=c++14
 SRC_PATH = Core/src
 NET_SRC_PATH = $(SRC_PATH)/net
 OTHER_SRC_PATH = $(SRC_PATH)/other
@@ -19,5 +19,19 @@ other:
 	-o $(OUT_PATH)/other.o
 set:
 	$(CXX) $(CXXFLAGS) -c $(SET_SRC_PATH)/qq_info.h $(SET_SRC_PATH)/qq_message.h $(SET_SRC_PATH)/qq_message.cc \
-	$(OTHER_SRC_PATH)/log.h $(OTHER_SRC_PATH)/platform.h $(OTHER_SRC_PATH)/platform.cpp \
-	-o $(OUT_PATH)/other.o
+	-o $(OUT_PATH)/set.o
+request:
+	$(CXX) $(CXXFLAGS) -c \
+	$(REQUEST_SRC_PATH)/qq_contact.h $(REQUEST_SRC_PATH)/qq_contact.cc \
+	$(REQUEST_SRC_PATH)/qq_login.h $(REQUEST_SRC_PATH)/qq_login.cc \
+	$(REQUEST_SRC_PATH)/qq_poll.h $(REQUEST_SRC_PATH)/qq_poll.cpp \
+	$(REQUEST_SRC_PATH)/qq_temp.h $(REQUEST_SRC_PATH)/qq_temp.cc \
+	-o $(OUT_PATH)/request.o
+main:
+	$(CXX) $(CXXFLAGS) -c \
+	$(SRC_PATH)/qq_control.h $(SRC_PATH)/qq_control.cc \
+	$(SRC_PATH)/core_main.h $(SRC_PATH)/test.cpp \
+	-o $(OUT_PATH)/main.o
+test:
+	$(CXX) $(CXXFLAGS) -o test $(OUT_PATH)/main.o $(OUT_PATH)/request.o $(OUT_PATH)/set.o $(OUT_PATH)/other.o $(OUT_PATH)/http_client.o \
+	$(THIRD_UNIX_LIB_PATH)/libjsoncpp.a -L $(THIRD_UNIX_LIB_PATH) -lcurl
