@@ -41,7 +41,7 @@ bool qq::QQControl::GetQRCImg(std::string & data) {
         return false;
     }
     if(!m_login->GetLoginSig()){
-        return nullptr;
+        return false;
     }
     return m_login->GetQRC(data);
 }
@@ -161,7 +161,7 @@ bool qq::QQControl::GetDiscusDetailInfo(uint64 did, DiscusDetailInfo &ddi) {
 
 bool qq::QQControl::GetUserFace(uint64 uin, std::string &data) {
     if(nullptr == m_temp){
-        return nullptr;
+        return false;
     }
 	return m_temp->GetUserFace(m_session, uin, data);
 }

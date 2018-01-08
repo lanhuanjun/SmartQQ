@@ -4,6 +4,9 @@
 #if defined(WIN32) || defined(WIN64) || (_WIN32) || (_WIN64)
 #include <windows.h>
 #include <string>
+#else
+#include <stdint.h>
+#include <unistd.h>
 #endif
 
 #if defined(WIN32) || defined(WIN64) || (_WIN32) || (_WIN64)
