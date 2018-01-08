@@ -9,7 +9,7 @@ SET_SRC_PATH = $(SRC_PATH)/set
 THIRD_PATH = third
 THIRD_INCLUDE_PATH = $(THIRD_PATH)/include
 THIRD_LIB_PATH = $(THIRD_PATH)/lib
-THIRD_UNIX_LIB_PATH = $(THIRD_PATH)/unix
+THIRD_UNIX_LIB_PATH = $(THIRD_LIB_PATH)/unix
 
 core : request.o main.o set.o other.o http_client.o
 	$(CXX) $(CXXFLAGS)  -o core main.o request.o set.o other.o http_client.o \
