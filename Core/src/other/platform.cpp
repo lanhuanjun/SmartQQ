@@ -12,7 +12,7 @@ std::string get_exe_path()
 		path = szFilePath;
 	}
 #else
-    char buf[PATH_MAX];
+    char buf[PATH_MAX + 1];
 	int rslt = readlink("/proc/self/exe", buf, PATH_MAX);// buf·µ»Ø"/a/b/c"
 	if (rslt < 0 || rslt >= PATH_MAX)
 	{

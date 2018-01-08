@@ -14,6 +14,7 @@ typedef SSIZE_T ssize_t;//curl ÖÐ»á±¨´í
 typedef UINT64 uint64;
 #else
 typedef uint64_t uint64;
+#define PATH_MAX 1024
 #endif
 
 #if defined(WIN32) || defined(WIN64) || (_WIN32) || (_WIN64)
