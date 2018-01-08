@@ -11,8 +11,8 @@ THIRD_INCLUDE_PATH = $(THIRD_PATH)/include
 THIRD_LIB_PATH = $(THIRD_PATH)/lib
 THIRD_UNIX_LIB_PATH = $(THIRD_LIB_PATH)/unix
 
-core : request.o main.o set.o other.o http_client.o
-	$(CXX) $(CXXFLAGS)  -o core main.o request.o set.o other.o http_client.o \
+core : easylogging++.o http_client.o platform.o qq_contact.o qq_control.o  qq_login.o  qq_message.o  qq_poll.o  qq_temp.o test.o
+	$(CXX) $(CXXFLAGS)  -o core easylogging++.o http_client.o platform.o qq_contact.o qq_control.o  qq_login.o  qq_message.o  qq_poll.o  qq_temp.o test.o \
 	$(THIRD_UNIX_LIB_PATH)/libjsoncpp.a -L $(THIRD_UNIX_LIB_PATH) -lcurl
 
 http_client.o : $(NET_SRC_PATH)/http_client.cc $(NET_SRC_PATH)/http_client.h
