@@ -41,6 +41,9 @@ qq_temp.o : $(REQUEST_SRC_PATH)/qq_temp.h $(REQUEST_SRC_PATH)/qq_temp.cc
 
 qq_control.o : $(SRC_PATH)/qq_control.h $(SRC_PATH)/qq_control.cc 
 	$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/qq_control.cc
+	
+qq_message.o : $(SET_SRC_PATH)/qq_message.h $(SET_SRC_PATH)/qq_message.cc
+	$(CXX) $(CXXFLAGS) -c $(SET_SRC_PATH)/qq_message.cc
 
 main.o : $(SRC_PATH)/core_main.h $(SRC_PATH)/test.cpp
 	$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/test.cpp
