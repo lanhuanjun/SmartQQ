@@ -31,12 +31,12 @@ qq_contact.o : $(REQUEST_SRC_PATH)/qq_contact.h $(REQUEST_SRC_PATH)/qq_contact.c
 	$(CXX) $(CXXFLAGS) -c $(REQUEST_SRC_PATH)/qq_contact.cc
 
 qq_poll.o : $(REQUEST_SRC_PATH)/qq_poll.h $(REQUEST_SRC_PATH)/qq_poll.cpp
-	$(CXX) $(CXXFLAGS) -c $(REQUEST_SRC_PATH)/qq_poll.cc
+	$(CXX) $(CXXFLAGS) -c $(REQUEST_SRC_PATH)/qq_poll.cpp
 
-qq_login.o : $(REQUEST_SRC_PATH)/qq_login.h $(REQUEST_SRC_PATH)/qq_login.cpp
+qq_login.o : $(REQUEST_SRC_PATH)/qq_login.h $(REQUEST_SRC_PATH)/qq_login.cc
 	$(CXX) $(CXXFLAGS) -c $(REQUEST_SRC_PATH)/qq_login.cc
 
-qq_temp.o : $(REQUEST_SRC_PATH)/qq_temp.h $(REQUEST_SRC_PATH)/qq_temp.cpp
+qq_temp.o : $(REQUEST_SRC_PATH)/qq_temp.h $(REQUEST_SRC_PATH)/qq_temp.cc
 	$(CXX) $(CXXFLAGS) -c $(REQUEST_SRC_PATH)/qq_temp.cc
 
 qq_control.o : $(SRC_PATH)/qq_control.h $(SRC_PATH)/qq_control.cc 
