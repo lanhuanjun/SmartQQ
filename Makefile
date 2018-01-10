@@ -11,8 +11,8 @@ THIRD_INCLUDE_PATH = $(THIRD_PATH)/include
 THIRD_LIB_PATH = $(THIRD_PATH)/lib
 THIRD_UNIX_LIB_PATH = $(THIRD_LIB_PATH)/unix
 
-core : easylogging++.o http_client.o platform.o qq_contact.o qq_control.o  qq_login.o  qq_message.o  qq_poll.o  qq_temp.o test.o
-	$(CXX) $(CXXFLAGS) -o core easylogging++.o http_client.o platform.o qq_contact.o qq_control.o  qq_login.o  qq_message.o  qq_poll.o  qq_temp.o test.o \
+core : easylogging++.o http_client.o platform.o qq_contact.o qq_control.o  qq_login.o  qq_message.o  qq_poll.o  qq_temp.o main.o
+	$(CXX) $(CXXFLAGS) -o core easylogging++.o http_client.o platform.o qq_contact.o qq_control.o  qq_login.o  qq_message.o  qq_poll.o  qq_temp.o main.o \
 	$(THIRD_UNIX_LIB_PATH)/libjsoncpp.a -L $(THIRD_UNIX_LIB_PATH) -lcurl
 
 http_client.o : $(NET_SRC_PATH)/http_client.cc $(NET_SRC_PATH)/http_client.h
@@ -32,6 +32,9 @@ qq_contact.o : $(REQUEST_SRC_PATH)/qq_contact.h $(REQUEST_SRC_PATH)/qq_contact.c
 
 qq_poll.o : $(REQUEST_SRC_PATH)/qq_poll.h $(REQUEST_SRC_PATH)/qq_poll.cpp
 	$(CXX) $(CXXFLAGS) -c $(REQUEST_SRC_PATH)/qq_poll.cc
+
+qq_login.o : $(REQUEST_SRC_PATH)/qq_login.h $(REQUEST_SRC_PATH)/qq_login.cpp
+	$(CXX) $(CXXFLAGS) -c $(REQUEST_SRC_PATH)/qq_login.cc
 
 qq_temp.o : $(REQUEST_SRC_PATH)/qq_temp.h $(REQUEST_SRC_PATH)/qq_temp.cpp
 	$(CXX) $(CXXFLAGS) -c $(REQUEST_SRC_PATH)/qq_temp.cc
