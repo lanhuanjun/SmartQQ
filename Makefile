@@ -18,23 +18,26 @@ core : easylogging++.o http_client.o platform.o qq_contact.o qq_control.o  qq_lo
 http_client.o : $(NET_SRC_PATH)/http_client.cc $(NET_SRC_PATH)/http_client.h
 	$(CXX) $(CXXFLAGS) -c $(NET_SRC_PATH)/http_client.cc
 
-other.o : $(OTHER_SRC_PATH)/base.h $(OTHER_SRC_PATH)/easylogging++.h $(OTHER_SRC_PATH)/easylogging++.cc \
-	$(OTHER_SRC_PATH)/log.h $(OTHER_SRC_PATH)/platform.h $(OTHER_SRC_PATH)/platform.cpp
-	$(CXX) $(CXXFLAGS) -c $(OTHER_SRC_PATH)/base.h $(OTHER_SRC_PATH)/easylogging++.h $(OTHER_SRC_PATH)/easylogging++.cc \
-	$(OTHER_SRC_PATH)/log.h $(OTHER_SRC_PATH)/platform.h $(OTHER_SRC_PATH)/platform.cpp
+platform.o : $(OTHER_SRC_PATH)/base.h  $(OTHER_SRC_PATH)/log.h $(OTHER_SRC_PATH)/platform.h $(OTHER_SRC_PATH)/platform.cpp
+	$(CXX) $(CXXFLAGS) -c $(OTHER_SRC_PATH)/platform.cpp
+
+easylogging++.o ： $(OTHER_SRC_PATH)/easylogging++.h $(OTHER_SRC_PATH)/easylogging++.cc
+	$(CXX) $(CXXFLAGS) -c $(OTHER_SRC_PATH)/easylogging++.cc
 
 set.o : $(SET_SRC_PATH)/qq_info.h $(SET_SRC_PATH)/qq_message.h $(SET_SRC_PATH)/qq_message.cc
 	$(CXX) $(CXXFLAGS) -c $(SET_SRC_PATH)/qq_info.h $(SET_SRC_PATH)/qq_message.cc
 
-request.o : $(REQUEST_SRC_PATH)/qq_contact.h $(REQUEST_SRC_PATH)/qq_contact.cc \
-	$(REQUEST_SRC_PATH)/qq_login.h $(REQUEST_SRC_PATH)/qq_login.cc \
-	$(REQUEST_SRC_PATH)/qq_poll.h $(REQUEST_SRC_PATH)/qq_poll.cpp \
-	$(REQUEST_SRC_PATH)/qq_temp.h $(REQUEST_SRC_PATH)/qq_temp.cc
-	$(CXX) $(CXXFLAGS) -c \
-	$(REQUEST_SRC_PATH)/qq_contact.h $(REQUEST_SRC_PATH)/qq_contact.cc \
-	$(REQUEST_SRC_PATH)/qq_login.h $(REQUEST_SRC_PATH)/qq_login.cc \
-	$(REQUEST_SRC_PATH)/qq_poll.h $(REQUEST_SRC_PATH)/qq_poll.cpp \
-	$(REQUEST_SRC_PATH)/qq_temp.h $(REQUEST_SRC_PATH)/qq_temp.cc
+qq_contact.o : $(REQUEST_SRC_PATH)/qq_contact.h $(REQUEST_SRC_PATH)/qq_contact.cc
+	$(CXX) $(CXXFLAGS) -c $(REQUEST_SRC_PATH)/qq_contact.cc
 
-main.o : $(SRC_PATH)/qq_control.h $(SRC_PATH)/qq_control.cc $(SRC_PATH)/core_main.h $(SRC_PATH)/test.cpp
-	$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/qq_control.h $(SRC_PATH)/qq_control.cc $(SRC_PATH)/core_main.h $(SRC_PATH)/test.cpp
+qq_poll.o : $(REQUEST_SRC_PATH)/qq_poll.h $(REQUEST_SRC_PATH)/qq_poll.cpp
+	$(CXX) $(CXXFLAGS) -c $(REQUEST_SRC_PATH)/qq_poll.cc
+
+qq_temp.o : $(REQUEST_SRC_PATH)/qq_temp.h $(REQUEST_SRC_PATH)/qq_temp.cpp
+	$(CXX) $(CXXFLAGS) -c $(REQUEST_SRC_PATH)/qq_temp.cc
+
+qq_control.o : $(SRC_PATH)/qq_control.h $(SRC_PATH)/qq_control.cc 
+	$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/qq_control.cc
+
+main.o : $(SRC_PATH)/core_main.h $(SRC_PATH)/test.cpp
+	$(CXX) $(CXXFLAGS) -c $(SRC_PATH)/test.cpp
