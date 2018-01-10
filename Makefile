@@ -12,7 +12,7 @@ THIRD_LIB_PATH = $(THIRD_PATH)/lib
 THIRD_UNIX_LIB_PATH = $(THIRD_LIB_PATH)/unix
 
 core : easylogging++.o http_client.o platform.o qq_contact.o qq_control.o  qq_login.o  qq_message.o  qq_poll.o  qq_temp.o test.o
-	$(CXX) $(CXXFLAGS)  -o core easylogging++.o http_client.o platform.o qq_contact.o qq_control.o  qq_login.o  qq_message.o  qq_poll.o  qq_temp.o test.o \
+	$(CXX) $(CXXFLAGS) -o core easylogging++.o http_client.o platform.o qq_contact.o qq_control.o  qq_login.o  qq_message.o  qq_poll.o  qq_temp.o test.o \
 	$(THIRD_UNIX_LIB_PATH)/libjsoncpp.a -L $(THIRD_UNIX_LIB_PATH) -lcurl
 
 http_client.o : $(NET_SRC_PATH)/http_client.cc $(NET_SRC_PATH)/http_client.h
@@ -21,7 +21,7 @@ http_client.o : $(NET_SRC_PATH)/http_client.cc $(NET_SRC_PATH)/http_client.h
 platform.o : $(OTHER_SRC_PATH)/base.h  $(OTHER_SRC_PATH)/log.h $(OTHER_SRC_PATH)/platform.h $(OTHER_SRC_PATH)/platform.cpp
 	$(CXX) $(CXXFLAGS) -c $(OTHER_SRC_PATH)/platform.cpp
 
-easylogging++.o ： $(OTHER_SRC_PATH)/easylogging++.h $(OTHER_SRC_PATH)/easylogging++.cc
+easylogging++.o : $(OTHER_SRC_PATH)/easylogging++.h $(OTHER_SRC_PATH)/easylogging++.cc
 	$(CXX) $(CXXFLAGS) -c $(OTHER_SRC_PATH)/easylogging++.cc
 
 set.o : $(SET_SRC_PATH)/qq_info.h $(SET_SRC_PATH)/qq_message.h $(SET_SRC_PATH)/qq_message.cc
