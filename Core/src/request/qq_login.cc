@@ -184,7 +184,7 @@ bool qq::QQLogin::GetVFWebqq() {
         return false;
     }
     int retcode = root["retcode"].asInt();
-    if(0 !=retcode){
+    if(0 != retcode){
         return false;
     }
     std::string vfwebqq = root["result"]["vfwebqq"].asString();

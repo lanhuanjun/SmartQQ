@@ -3,6 +3,7 @@
 #include "platform.h"
 #include <memory>
 #include <sstream>
+#include "easylogging++.h"
 namespace qq{
 	inline std::string JsonNodeToString(Json::Value root)
 	{
@@ -22,8 +23,13 @@ namespace qq{
 
 		JSONCPP_STRING errs;
 		auto data = str.c_str();
-		bool is_ok = reader->parse(data, data + (str.length() -1),&root,&errs);
-		return errs.empty() && is_ok;
+		bool is_ok = reader->parse(data, data + (str.length()),&root,&errs);
+		if(!errs.empty() || !is_ok)
+		{
+			LOG(ERROR) << "StringToJsonValue error. " << errs << " data:" << str;
+			return false;
+		}
+		return true;
 	}
 
 	inline int Hash33(std::string str)
