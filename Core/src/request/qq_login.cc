@@ -212,10 +212,6 @@ bool qq::QQLogin::Login() {
 	auto res = CLIENT->GetResponse();
 	LOG(INFO) << "QQLogin::Login succ. size:" << res->m_data.size() << " data:" << res->m_data;
 	Json::Value root;
-	std::ofstream os("E:\\a.txt",std::ios::trunc|std::ios::binary);
-	os << res->m_data;
-	os.flush();
-	os.close();
 	
 	if (!StringToJsonValue(root, res->m_data))
 	{
