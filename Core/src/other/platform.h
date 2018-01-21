@@ -21,12 +21,12 @@ typedef uint64_t uint64;
 
 #pragma warning (push)
 #pragma warning (disable: 4996)
-#include "../../../third/include/json/json.h"
+#include <json/json.h>
 #pragma warning (pop)
 
 #else
 
-#include "../../../third/include/json/json.h"
+#include <json/json.h>
 
 #endif
 std::string get_exe_path();

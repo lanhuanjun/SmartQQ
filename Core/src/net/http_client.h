@@ -10,9 +10,8 @@
 #include <unordered_map>
 #include <cassert>
 #include "../other/platform.h"
-#include "../../../third/include/curl/curl.h"
+#include <curl/curl.h>
 #include "../other/easylogging++.h"
-
 
 namespace qq{
 	typedef std::pair<std::string, std::string> Header;
