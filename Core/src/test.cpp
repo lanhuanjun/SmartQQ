@@ -7,7 +7,7 @@ using namespace qq;
 
 bool SaveImg(const string & data)
 {
-	ofstream file_stream("E:\\qrc.png", std::ios::binary|ios::trunc);
+	ofstream file_stream("qrc.png", std::ios::binary|ios::trunc);
 	file_stream << data;
 	file_stream.flush();
 	file_stream.close();

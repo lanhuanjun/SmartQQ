@@ -13,7 +13,7 @@ THIRD_UNIX_LIB_PATH = $(THIRD_LIB_PATH)/unix
 
 core : test.o  qq_contact.o qq_control.o qq_login.o qq_poll.o qq_temp.o qq_message.o http_client.o easylogging++.o platform.o
 	$(CXX) $(CXXFLAGS) -o core  test.o qq_control.o qq_contact.o qq_login.o qq_poll.o qq_temp.o qq_message.o http_client.o easylogging++.o platform.o \
-	ljsoncpp -lcurl
+	-ljsoncpp -lcurl
 
 easylogging++.o : $(OTHER_SRC_PATH)/easylogging++.h $(OTHER_SRC_PATH)/easylogging++.cc
 	$(CXX) $(CXXFLAGS) -c $(OTHER_SRC_PATH)/easylogging++.cc
